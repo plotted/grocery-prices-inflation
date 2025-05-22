@@ -29,7 +29,7 @@ __We Still Don't Believe How Much Things Cost__
 
 <https://www.wsj.com/economy/consumers/grocery-prices-inflation-coffee-milk-903aead6>
 
-![February 2024 prices for select products, and their change from February 2020](pricing-pain.png)
+![February 2024 prices for select products, and their change from February 2020](source/pricing-pain.png)
 
 \
 

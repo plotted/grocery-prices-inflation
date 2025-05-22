@@ -6,7 +6,7 @@ This repository contains code in R to replicate the following graphic:
   
 
 ![February 2024 prices for select products, and their change from
-February 2020](pricing-pain.png)
+February 2020](source/pricing-pain.png)
 
 ## Source
 
@@ -16,13 +16,13 @@ February 2020](pricing-pain.png)
 
 - Date: Mar 12, 2024
 
-- Organization: Wall Street Journal
+- From: Wall Street Journal
 
 - URL:
   <https://www.wsj.com/economy/consumers/grocery-prices-inflation-coffee-milk-903aead6>
 
 - PDF:
-  [grocery-prices-inflation-2020-2024-wsj.pdf](grocery-prices-inflation-2020-2024-wsj.pdf)
+  [grocery-prices-inflation-2020-2024-wsj.pdf](source/grocery-prices-inflation-2020-2024-wsj.pdf)
 
 ## Data
 
