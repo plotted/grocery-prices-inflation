@@ -1,0 +1,223 @@
+---
+title: "Princing Pain"
+author: "Gaston Sanchez"
+date: "May 21, 2025"
+format: 
+  html:
+    toc: true
+    number-sections: true
+    theme: zephyr
+embed-resources: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+```
+
+
+```{r pkgs, message = FALSE, echo = FALSE}
+library(tidyverse)  # ecosystem of data science packages
+```
+
+
+# Description
+
+The data visualization of this module is based on the following Wall Street 
+Journal's article by Rachel Wolfe and Rachel Louise Ensign (March 12, 2024):
+
+__We Still Don't Believe How Much Things Cost__
+
+<https://www.wsj.com/economy/consumers/grocery-prices-inflation-coffee-milk-903aead6>
+
+![February 2024 prices for select products, and their change from February 2020](pricing-pain.png)
+
+\
+
+## Details (datasheet)
+
+- __Topic(s)__: 
+  + Economics 
+  + U.S.
+  + Inflation
+- __Data__:
+  + Size: small data
+  + Format: R vectors and data.frame
+- __Graphic__:
+  + Type: bar chart
+  + Styles: ggplot, interactive ggiraph 
+  + Interactive: no
+
+
+## R Packages
+
+```{r pkgs, message = FALSE, eval = FALSE}
+```
+
+
+-----
+
+
+# Data
+
+The graphic that we want to replicate is the bar chart titled __Pricing Pain__.
+As you can tell, the data values correspond to prices for select products.
+
+Since this is a small data set, we can input their values by hand in R.
+As you know, for `ggplot` convenience, the data must be in a table object such
+as a data.frame or a tibble. In this case we'll use a data.frame.
+
+```{r}
+product = c(
+  "Baby wipes", "Bleach", "Cooking Oil", "Cows milk",
+  "Deodorant", "Dog food", "Eggs", "Nutrition bars", 
+  "Paper towels", "Potatoes", "Ramen")
+
+price_2020 = c(4.25, 2.78, 5.22, 2.70, 4.68, 5.42, 2.35, 3.12, 5.76, 2.00, 0.62)
+
+price_2024 = c(6.64, 4.87, 8.04, 3.26, 7.43, 8.48, 3.87, 5.67, 8.22, 2.62, 1.08)
+
+dat = data.frame(
+  "product" = product,
+  "price_2020" = price_2020,
+  "price_2024" = price_2024
+)
+
+dat
+```
+
+
+## Data Preparation
+
+Based on the price of products, we have to compute the percentage change from 
+2020 to 2024. The following command allows us to add (`mutate`) a column
+`change` for this percentage change in prices:
+
+```{r}
+dat = dat |>
+  mutate(change = (price_2024 - price_2020) / price_2020)
+
+dat
+```
+
+
+-----
+
+
+# Graphs: Bar Charts
+
+As usual, let's go over a series of plotting rounds, starting with a default
+bar chart, and then gradually adding more elements, and customizing its appearance to get as close as possible to our target visualization.
+
+
+## Version 1
+
+```{r}
+# version 1: default bar chart
+ggplot(dat) +
+  geom_col(aes(x = change, y = product))
+```
+
+Notice that `ggplot` arranges bars in alphabetical order bottom to top.
+However, we need them in reversed order.
+
+
+## Version 2
+
+To reverse the order of the labels, we have to do some data manipulations.
+
+```{r}
+# create "product" as an ordered R factor
+product = c(
+  "Baby wipes", "Bleach", "Cooking Oil", "Cows milk",
+  "Deodorant", "Dog food", "Eggs", "Nutrition bars", 
+  "Paper towels", "Potatoes", "Ramen")
+
+product = factor(rev(product), levels = rev(product), ordered = TRUE)
+
+product
+```
+
+```{r}
+# re-assembling data frame
+price_2020 = rev(
+  c(4.25, 2.78, 5.22, 2.70, 4.68, 5.42, 2.35, 3.12, 5.76, 2.00, 0.62))
+
+price_2024 = rev(
+  c(6.64, 4.87, 8.04, 3.26, 7.43, 8.48, 3.87, 5.67, 8.22, 2.62, 1.08))
+
+dat = data.frame(
+  "product" = product,
+  "price_2020" = price_2020,
+  "price_2024" = price_2024
+)
+
+dat = dat |>
+  mutate(change = 100 * (price_2024 - price_2020) / price_2020)
+
+dat
+```
+
+New bar chart with bars in the right order:
+
+```{r}
+# version 2: Reordering Bars
+ggplot(dat) +
+  geom_col(aes(x = change, y = product))
+```
+
+
+## Version 3
+
+```{r}
+# version 3: further customization
+ggplot(dat) +
+  geom_col(aes(x = change, y = product), fill = "#0279af") +
+  scale_x_continuous(breaks = seq(0, 100, by = 25)) +
+  geom_text(x = 0, aes(y = product, label = price_2020), 
+            hjust = -0.25, size = 2.5, color = "white") +
+  geom_text(aes(x = change, y = product, label = price_2024), 
+            hjust = -0.1, size = 2.5, color = "black") +
+  labs(title = "Pricing Pain",
+       subtitle = "Feb-2024 prices, and their change from Feb-2020",
+       x = "", y = "") +
+  theme(axis.line = element_blank(),
+        panel.background = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.ticks.y = element_blank())
+```
+
+
+## Version 4
+
+More data manipulation for those tiny details such as the text for the
+displayed labels:
+
+```{r}
+# improving labels
+dat = dat |>
+  mutate(label_2020 = paste0("$", price_2020),
+         label_2024 = paste0("$", price_2024))
+```
+
+
+```{r}
+# version 4
+ggplot(dat) +
+  theme(axis.line = element_blank(),
+        panel.background = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.ticks.y = element_blank()) +
+  geom_vline(xintercept = seq(0, 75, by = 25), 
+             linetype = "dotted", color = "gray80") +
+  geom_col(aes(x = change, y = product), fill = "#0279af") +
+  scale_x_continuous(breaks = seq(0, 100, by = 25), position = "top") +
+  geom_text(x = 0, aes(y = product, label = label_2020), 
+            hjust = -0.25, size = 2.5, color = "white") +
+  geom_text(aes(x = change, y = product, label = label_2024), 
+            hjust = -0.1, size = 2.5, color = "black") +
+  labs(title = "Pricing Pain",
+       subtitle = "Feb-2024 prices, and their change from Feb-2020",
+       x = "", y = "")
+```
